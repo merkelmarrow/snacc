@@ -464,6 +464,36 @@ $RECYCLE.BIN/
 *.dylib
 *.exp
 
+# Build artifacts
+out/build/
+*.exe
+*.dll
+*.pdb
+*.ilk
+*.obj
+*.tlog
+*.log
+*.tmp
+
+# CMake-generated files
+*.ninja
+*.cache
+*.cmake
+CMakeFiles/
+out/build/x64-debug/
+
+# Visual Studio-specific files
+*.vcxproj.user
+*.suo
+*.lastbuildstate
+.vscode/
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
 # Static analysis tools
 *.codeanalysis
 *.analyzerreport
