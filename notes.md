@@ -34,6 +34,8 @@ message HelloRequest {
 message HelloReply {
   string message = 1;
 }
+```
+
 
 # Dev Log
 ## 29/12/2024
