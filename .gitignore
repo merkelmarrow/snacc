@@ -481,6 +481,7 @@ out/build/
 *.cmake
 CMakeFiles/
 out/build/x64-debug/
+out/
 
 # Visual Studio-specific files
 *.vcxproj.user
