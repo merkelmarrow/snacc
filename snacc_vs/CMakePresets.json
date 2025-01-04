@@ -1,4 +1,6 @@
-﻿{
+﻿// CMakePresets.json
+
+{
     "version": 3,
     "configurePresets": [
         {
@@ -10,7 +12,8 @@
           "cacheVariables": {
             "CMAKE_C_COMPILER": "cl.exe",
             "CMAKE_CXX_COMPILER": "cl.exe",
-            "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+            "VCPKG_ROOT": "$env{VCPKG_ROOT}",
           },
             "condition": {
                 "type": "equals",

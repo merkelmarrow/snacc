@@ -1,6 +1,6 @@
 # master/CMakeLists.txt
 
-cmake_minimum_required (Version 3.21)
+cmake_minimum_required (VERSION 3.21)
 
 set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_STANDARD_REQUIRED)
@@ -11,8 +11,9 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-find_package (protobuf CONFIG REQUIRED)
+find_package (Protobuf CONFIG REQUIRED)
 find_package (gRPC CONFIG REQUIRED)
+find_package (ZLIB REQUIRED)
 
 add_library (heartbeat_proto STATIC
 	${CMAKE_CURRENT_SOURCE_DIR}/../proto/heartbeat.pb.cc
@@ -25,6 +26,7 @@ target_include_directories (heartbeat_proto PUBLIC
 )
 
 target_link_libraries (heartbeat_proto PUBLIC
+	ZLIB::ZLIB
 	protobuf::libprotobuf
 	gRPC::grpc
 	gRPC::grpc++
@@ -33,7 +35,7 @@ target_link_libraries (heartbeat_proto PUBLIC
 
 add_executable (master
 	master_main.cpp
-	master_service.impl.cpp
+	master_service_impl.cpp
 )
 
 target_link_libraries (master PRIVATE
