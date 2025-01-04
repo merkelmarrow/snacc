@@ -12,7 +12,7 @@ message HeartbeatRequest {
 
 // Response M -> W acknowledging heartbeat
 message HeartbeatReply {
-	int acknowledged = 1; // different codes for different acknowledgments
+	int32 acknowledged = 1; // different codes for different acknowledgments
 }
 
 // gRPC service definition
