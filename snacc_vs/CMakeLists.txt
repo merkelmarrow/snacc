@@ -15,14 +15,18 @@ endif()
 find_package(Protobuf CONFIG REQUIRED)
 
 # Compile the generated .pb.cc file
-add_library(student_proto student.pb.cc)
+add_library(student_proto STATIC student.pb.cc)
 target_include_directories(student_proto PUBLIC ${Protobuf_INCLUDE_DIRS})
 target_link_libraries(student_proto PUBLIC protobuf::libprotobuf)
 
 
-# The main executable
+# Snacc executable
 add_executable (snacc_vs snacc_vs.cpp)
 target_link_libraries(snacc_vs PRIVATE student_proto)
+
+# Practice health check exectuable
+add_executable (health_check health_check.cpp)
+target_link_libraries (health_check PRIVATE student_proto)
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET snacc_vs PROPERTY CXX_STANDARD 20)
