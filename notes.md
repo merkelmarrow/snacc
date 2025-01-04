@@ -42,4 +42,7 @@ message HelloReply {
 Created VS project (CMake Project).
 ## 30/12/2024
 Learning gRPC and protocol buffers.
-
+## 02/01/2025
+Following gRPC health check guide.
+## 03/01/2025
+Learning CMake theory.
