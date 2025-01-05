@@ -25,3 +25,12 @@ std::string read_file (const std::string& filename) {
 
 	return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 }
+
+int main (int argc, char** argv) {
+	// Create service instance
+
+	grpc::SslServerCredentialsOptions::PemKeyCertPair pem_key_cert_pair;
+
+	pem_key_cert_pair.private_key = read_file("")
+}
+
