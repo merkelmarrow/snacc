@@ -18,10 +18,12 @@ find_package (ZLIB REQUIRED)
 add_library (heartbeat_proto STATIC
 	${CMAKE_CURRENT_SOURCE_DIR}/../proto/heartbeat.pb.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/../proto/heartbeat.grpc.pb.cc
+	${CMAKE_CURRENT_SOURCE_DIR}/../secrets/secrets.h
 )
 
 target_include_directories (heartbeat_proto PUBLIC
 	${CMAKE_CURRENT_SOURCE_DIR}/../proto
+	${CMAKE_CURRENT_SOURCE_DIR}/../Secrets
 	${Protobuf_INCLUDE_DIRS}
 )
 

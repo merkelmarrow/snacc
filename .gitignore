@@ -503,4 +503,6 @@ desktop.ini
 .clang-tidy-result
 .clang-format
 
+Secrets/
+
 ## FINISHED CUSTOM gitignores
