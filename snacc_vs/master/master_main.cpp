@@ -19,6 +19,7 @@
 
 // for local specific paths and values (to be replaced with general later)
 #include "secrets.h"
+#include <format>
 
 std::string read_file (const std::string& filename) {
 	std::filesystem::path filepath(filename);
@@ -51,7 +52,7 @@ int main (int argc, char** argv) {
 	auto server_creds = grpc::SslServerCredentials(ssl_opts);
 
 	// Build server listening on VPN interface
-	std::string server_address(LOCAL_VPN_MASTER_IP_AND_PORT);
+	std::string server_address = std::format("{}:{}", LOCAL_MASTER_VPN_IP, LOCAL_MASTER_gRPC_PORT);
 	grpc::ServerBuilder builder;
 
 	builder.AddListeningPort(server_address, server_creds);
@@ -62,6 +63,23 @@ int main (int argc, char** argv) {
 
 	// Build and start
 	std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
-	std::cout << 
+	std::cout << "Master node listening n " << server_address << std::endl;
+	std::cout << "Accessible via public IP: " << LOCAL_MASTER_PUBLIC_IP << std::endl;
+
+	std::thread monitor_thread([&service]() {
+		while (true) {
+			std::this_thread::sleep_for(std::chrono::seconds(5));
+			service.PrintAllWorkersConnStatus();
+		}
+	});
+
+	// Wait for server to shutdown (blocking)
+	server->Wait();
+
+	// Join monitor thread when shutting down
+	monitor_thread.join();
+
+	return 0;
+	
 }
 

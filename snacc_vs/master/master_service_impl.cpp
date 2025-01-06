@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <unordered_map>
 
+#include <magic_enum/magic_enum.hpp>
+
 //// For reference (namespace heartbeat)
 // class Service : public ::grpc::Service {
 // public:
@@ -65,15 +67,15 @@ public:
 		return ::grpc::Status::OK;
 	}
 
-	WorkerConnStatus GetWorkerConnStatus(int32_t worker_id) {
+	// don't use unless you've locked the mutex
+	WorkerConnStatus GetWorkerConnStatus (int32_t worker_id, uint64_t &diff) {
 		constexpr int DISCONNECTED_THRESHOLD = 30;
 		constexpr int CONNECTION_LOST_THRESHOLD = 15;
 
-		std::lock_guard lock(mutex_);
 
 		if (auto it = last_heartbeat_.find(worker_id); it != last_heartbeat_.end()) {
 			auto now = std::chrono::steady_clock::now();
-			auto diff = std::chrono::duration_cast<std::chrono::seconds>(now - it->second).count();
+			diff = std::chrono::duration_cast<std::chrono::seconds>(now - it->second).count();
 
 			if (diff > DISCONNECTED_THRESHOLD) return WorkerConnStatus::DISCONNECTED;
 			if (diff > CONNECTION_LOST_THRESHOLD) return WorkerConnStatus::CONNECTION_LOST;
@@ -82,6 +84,17 @@ public:
 
 		return WorkerConnStatus::UNKNOWN;
 	}
-	
-	
+
+	void PrintAllWorkersConnStatus() {
+
+		auto now = std::chrono::steady_clock::now();
+		std::lock_guard lock(mutex_);
+		for (const auto& [worker_id, last_heartbeat_time] : last_heartbeat_) {
+			uint64_t time_diff;
+			WorkerConnStatus conn_status = GetWorkerConnStatus(worker_id, time_diff);
+			std::cout << "Worker ID: " << worker_id
+				<< ", Status: " << magic_enum::enum_name(conn_status)
+				<< ", Last Heartbeat: " << time_diff << " seconds ago." << std::endl;
+		}
+	}
 };

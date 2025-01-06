@@ -14,6 +14,7 @@ endif()
 find_package (Protobuf CONFIG REQUIRED)
 find_package (gRPC CONFIG REQUIRED)
 find_package (ZLIB REQUIRED)
+find_package(magic_enum CONFIG REQUIRED)
 
 add_library (heartbeat_proto STATIC
 	${CMAKE_CURRENT_SOURCE_DIR}/../proto/heartbeat.pb.cc
@@ -33,6 +34,7 @@ target_link_libraries (heartbeat_proto PUBLIC
 	gRPC::grpc
 	gRPC::grpc++
 	gRPC::grpc++_reflection
+	magic_enum::magic_enum
 )
 
 add_executable (master
@@ -43,3 +45,6 @@ add_executable (master
 target_link_libraries (master PRIVATE
 	heartbeat_proto
 )
+
+
+    
