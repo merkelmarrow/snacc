@@ -1,0 +1,24 @@
+// proto/heartbeat/proto
+
+syntax = "proto3";
+
+package heartbeat;
+
+// Message from W -> M, containing worker ID and system stats
+message HeartbeatRequest {
+	string worker_hostname = 1; // Worker hostname
+	int32 worker_id = 2; // Agreed worker ID
+	float cpu_usage = 3; // CPU usage percentage (0.0 - 100.0)
+	float memory_usage = 4; // Memory usage percentage (0.0 - 100.0)
+}
+
+// Response M -> W acknowledging heartbeat
+message HeartbeatReply {
+	int32 acknowledged = 1; // different codes for different acknowledgments
+}
+
+// gRPC service definition
+service HeartbeatService {
+	// Worker calls this every 10s to report health
+	rpc SendHeartbeat (HeartbeatRequest) returns (HeartbeatReply);
+}
