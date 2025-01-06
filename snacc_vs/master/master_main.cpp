@@ -63,7 +63,7 @@ int main (int argc, char** argv) {
 
 	// Build and start
 	std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
-	std::cout << "Master node listening n " << server_address << std::endl;
+	std::cout << "Master node listening on " << server_address << std::endl;
 	std::cout << "Accessible via public IP: " << LOCAL_MASTER_PUBLIC_IP << std::endl;
 
 	std::thread monitor_thread([&service]() {
