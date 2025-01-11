@@ -33,7 +33,6 @@ int main(int argc, char* argv[]) {
 
 		// Initialise system monitor
 		SystemMonitor monitor;
-		monitor_ptr = &monitor;
 
 		if (!monitor.Initialise()) {
 			std::cerr 
@@ -41,6 +40,7 @@ int main(int argc, char* argv[]) {
 				<< monitor.GetLastError() << std::endl;
 			return 1;
 		}
+		monitor_ptr = &monitor;
 
 		// Initialise heartbeat client
 		HeartbeatClient client(server_address, root_cert_path, client_cert_path, client_key_path);
