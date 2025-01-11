@@ -23,65 +23,65 @@
 #include <grpcpp/support/sync_stream.h>
 namespace heartbeat {
 
-static const char* HeartbeatService_method_names[] = {
-  "/heartbeat.HeartbeatService/SendHeartbeat",
-};
+	static const char* HeartbeatService_method_names[] = {
+	  "/heartbeat.HeartbeatService/SendHeartbeat",
+	};
 
-std::unique_ptr< HeartbeatService::Stub> HeartbeatService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
-  (void)options;
-  std::unique_ptr< HeartbeatService::Stub> stub(new HeartbeatService::Stub(channel, options));
-  return stub;
-}
+	std::unique_ptr< HeartbeatService::Stub> HeartbeatService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
+		(void)options;
+		std::unique_ptr< HeartbeatService::Stub> stub(new HeartbeatService::Stub(channel, options));
+		return stub;
+	}
 
-HeartbeatService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-  : channel_(channel), rpcmethod_SendHeartbeat_(HeartbeatService_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  {}
+	HeartbeatService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
+		: channel_(channel), rpcmethod_SendHeartbeat_(HeartbeatService_method_names[0], options.suffix_for_stats(), ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+	{}
 
-::grpc::Status HeartbeatService::Stub::SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::heartbeat::HeartbeatReply* response) {
-  return ::grpc::internal::BlockingUnaryCall< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_SendHeartbeat_, context, request, response);
-}
+	::grpc::Status HeartbeatService::Stub::SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::heartbeat::HeartbeatReply* response) {
+		return ::grpc::internal::BlockingUnaryCall< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_SendHeartbeat_, context, request, response);
+	}
 
-void HeartbeatService::Stub::async::SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, std::function<void(::grpc::Status)> f) {
-  ::grpc::internal::CallbackUnaryCall< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SendHeartbeat_, context, request, response, std::move(f));
-}
+	void HeartbeatService::Stub::async::SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, std::function<void(::grpc::Status)> f) {
+		::grpc::internal::CallbackUnaryCall< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SendHeartbeat_, context, request, response, std::move(f));
+	}
 
-void HeartbeatService::Stub::async::SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, ::grpc::ClientUnaryReactor* reactor) {
-  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SendHeartbeat_, context, request, response, reactor);
-}
+	void HeartbeatService::Stub::async::SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, ::grpc::ClientUnaryReactor* reactor) {
+		::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_SendHeartbeat_, context, request, response, reactor);
+	}
 
-::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>* HeartbeatService::Stub::PrepareAsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::heartbeat::HeartbeatReply, ::heartbeat::HeartbeatRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_SendHeartbeat_, context, request);
-}
+	::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>* HeartbeatService::Stub::PrepareAsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
+		return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::heartbeat::HeartbeatReply, ::heartbeat::HeartbeatRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_SendHeartbeat_, context, request);
+	}
 
-::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>* HeartbeatService::Stub::AsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
-  auto* result =
-    this->PrepareAsyncSendHeartbeatRaw(context, request, cq);
-  result->StartCall();
-  return result;
-}
+	::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>* HeartbeatService::Stub::AsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
+		auto* result =
+			this->PrepareAsyncSendHeartbeatRaw(context, request, cq);
+		result->StartCall();
+		return result;
+	}
 
-HeartbeatService::Service::Service() {
-  AddMethod(new ::grpc::internal::RpcServiceMethod(
-      HeartbeatService_method_names[0],
-      ::grpc::internal::RpcMethod::NORMAL_RPC,
-      new ::grpc::internal::RpcMethodHandler< HeartbeatService::Service, ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
-          [](HeartbeatService::Service* service,
-             ::grpc::ServerContext* ctx,
-             const ::heartbeat::HeartbeatRequest* req,
-             ::heartbeat::HeartbeatReply* resp) {
-               return service->SendHeartbeat(ctx, req, resp);
-             }, this)));
-}
+	HeartbeatService::Service::Service() {
+		AddMethod(new ::grpc::internal::RpcServiceMethod(
+			HeartbeatService_method_names[0],
+			::grpc::internal::RpcMethod::NORMAL_RPC,
+			new ::grpc::internal::RpcMethodHandler< HeartbeatService::Service, ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+				[](HeartbeatService::Service* service,
+					::grpc::ServerContext* ctx,
+					const ::heartbeat::HeartbeatRequest* req,
+					::heartbeat::HeartbeatReply* resp) {
+						return service->SendHeartbeat(ctx, req, resp);
+				}, this)));
+	}
 
-HeartbeatService::Service::~Service() {
-}
+	HeartbeatService::Service::~Service() {
+	}
 
-::grpc::Status HeartbeatService::Service::SendHeartbeat(::grpc::ServerContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response) {
-  (void) context;
-  (void) request;
-  (void) response;
-  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-}
+	::grpc::Status HeartbeatService::Service::SendHeartbeat(::grpc::ServerContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response) {
+		(void)context;
+		(void)request;
+		(void)response;
+		return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+	}
 
 
 }  // namespace heartbeat

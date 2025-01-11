@@ -70,8 +70,8 @@ public:
 		}
 
 		enum HeartbeatResponse {
-			CONTINUE,
-			STOP
+			CONTINUE = 0,
+			STOP = 1
 		};
 
 		//// TODO: INSERT LOGIC TO EVALUATE HEALTH OF WORKER AND SEND REPONSE CODE
@@ -84,7 +84,7 @@ public:
 	}
 
 	// don't use unless you've locked the mutex
-	WorkerConnStatus GetWorkerConnStatus (int32_t worker_id, uint64_t &diff) {
+	WorkerConnStatus GetWorkerConnStatus(int32_t worker_id, uint64_t& diff) {
 		constexpr int DISCONNECTED_THRESHOLD = 30;
 		constexpr int CONNECTION_LOST_THRESHOLD = 15;
 
