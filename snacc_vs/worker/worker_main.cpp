@@ -44,7 +44,6 @@ int main(int argc, char* argv[]) {
 
 		// Initialise heartbeat client
 		HeartbeatClient client(server_address, root_cert_path, client_cert_path, client_key_path);
-		client_ptr = &client;
 
 		if (!client.Initialise()) {
 			std::cerr
@@ -52,6 +51,7 @@ int main(int argc, char* argv[]) {
 				<< client.GetLastError() << std::endl;
 			return 1;
 		}
+		client_ptr = &client;
 
 		std::cout << "Worker started. Sending heartbeats to " << server_address << std::endl;
 		
