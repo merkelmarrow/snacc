@@ -35,6 +35,8 @@ target_link_libraries (heartbeat_proto PUBLIC
 	gRPC::grpc++
 	gRPC::grpc++_reflection
 	magic_enum::magic_enum
+	pdh
+	psapi
 )
 
 add_executable (master
@@ -47,4 +49,4 @@ target_link_libraries (master PRIVATE
 )
 
 
-    
+   

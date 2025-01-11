@@ -11,10 +11,6 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-find_package (Protobuf CONFIG REQUIRED)
-find_package (gRPC CONFIG REQUIRED)
-find_package (ZLIB REQUIRED)
-
 add_executable (worker
 	system_monitor.hpp
 	system_monitor.cpp
@@ -25,5 +21,11 @@ target_link_libraries (worker PRIVATE
 	heartbeat_proto
 )
 
-
-    
+# Copy SSL certificates to build directory
+add_custom_command(TARGET worker POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${CMAKE_SOURCE_DIR}/certs/ca.crt
+        ${CMAKE_SOURCE_DIR}/certs/client.crt
+        ${CMAKE_SOURCE_DIR}/certs/client.key
+        $<TARGET_FILE_DIR:worker>
+)
