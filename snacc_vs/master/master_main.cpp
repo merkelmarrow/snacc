@@ -17,16 +17,105 @@
 // for output
 #include <iostream> 
 
+// for signal handling for graceful shutdown
+#include <signal.h>
+
 // for local specific paths and values (to be replaced with general later)
 #include "secrets.h"
 #include <format>
 
-std::string read_file (const std::string& filename) {
+// globals
+std::unique_ptr<grpc::Server> server;
+HeartbeatServiceImpl* service_ptr = nullptr;
+
+std::string read_file(const std::string& filename);
+
+
+int main (int argc, char** argv) {
+	// Register signal handlers
+	signal(SIGINT, SignalHandler);
+	signal(SIGTERM, SignalHandler);
+
+	try {
+		// Create service instance
+		HeartbeatServiceImpl service;
+		service_ptr = &service; // For signal handler
+
+		// Set up SSL creds
+		grpc::SslServerCredentialsOptions::PemKeyCertPair pem_key_cert_pair;
+
+		try {
+			pem_key_cert_pair.private_key = read_file(LOCAL_PATH_TO_SERVER_KEY);
+			pem_key_cert_pair.cert_chain = read_file(LOCAL_PATH_TO_SERVER_CRT);
+		}
+		catch (const std::runtime_error& e) {
+			std::cerr << "Failed to read SSL certs: " << e.what() << std::endl;
+			return 1;
+		}
+		
+		grpc::SslServerCredentialsOptions ssl_opts;
+		ssl_opts.pem_root_certs = read_file(LOCAL_PATH_TO_SERVER_ROOT_CERTS);
+		ssl_opts.pem_key_cert_pairs.push_back(pem_key_cert_pair);
+
+		auto server_creds = grpc::SslServerCredentials(ssl_opts);
+
+		// Build server listening on VPN interface
+		std::string server_address = std::format("{}:{}", LOCAL_MASTER_VPN_IP, LOCAL_MASTER_gRPC_PORT);
+		grpc::ServerBuilder builder;
+
+		builder.AddListeningPort(server_address, server_creds);
+		builder.SetMaxMessageSize(64 * 1024 * 1024); // 64 MB max message size (loads)
+		builder.SetMaxReceiveMessageSize(64 * 1024 * 1024);
+
+		builder.RegisterService(&service);
+
+		// Build and start
+		server = builder.BuildAndStart();
+		if (!server) {
+			std::cerr << "Failed to start server." << std::endl;
+			return 1;
+		}
+
+		std::cout << "Master node listening on " << server_address << std::endl;
+		std::cout << "Accessible via public IP: " << LOCAL_MASTER_PUBLIC_IP << std::endl;
+
+		// Monitoring thread
+		std::thread monitor_thread([&service]() {
+			try {
+				while (service.IsRunning()) {
+					std::this_thread::sleep_for(std::chrono::seconds(5));
+					service.PrintAllWorkersConnStatus();
+				}
+			}
+			catch (const std::exception& e) {
+				std::cerr << "Monitor thread error: " << e.what() << std::endl;
+				SignalHandler(SIGTERM);
+			}
+		});
+
+		// Wait for server to shutdown (blocking)
+		server->Wait();
+
+		// Clean shutdown
+		service.Shutdown();
+		if (monitor_thread.joinable()) {
+			monitor_thread.join();
+		}
+
+		return 0;
+	}
+	catch (const std::exception& e) {
+		std::cerr << "Fatal error: " << e.what() << std::endl;
+		return 1;
+	}
+}
+
+std::string read_file(const std::string& filename) {
 	std::filesystem::path filepath(filename);
 	if (!std::filesystem::exists(filepath)) {
 		throw std::runtime_error("File not found: " + filename);
 	}
-	
+
 	std::ifstream file(filepath, std::ios::binary);
 	if (!file.is_open()) {
 		throw std::runtime_error("Failed to open file: " + filename);
@@ -35,51 +124,13 @@ std::string read_file (const std::string& filename) {
 	return std::string((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 }
 
-int main (int argc, char** argv) {
-	// Create service instance
-	HeartbeatServiceImpl service;
+void SignalHandler(int32_t signum) {
+	std::cout << "\nReceived signal \"" << signum << "\". Initiating graceful shutdown..." << std::endl;
 
-	// Set up SSL creds
-	grpc::SslServerCredentialsOptions::PemKeyCertPair pem_key_cert_pair;
-
-	pem_key_cert_pair.private_key = read_file(LOCAL_PATH_TO_SERVER_KEY);
-	pem_key_cert_pair.cert_chain = read_file(LOCAL_PATH_TO_SERVER_CRT);
-
-	grpc::SslServerCredentialsOptions ssl_opts;
-	ssl_opts.pem_root_certs = read_file(LOCAL_PATH_TO_SERVER_ROOT_CERTS);
-	ssl_opts.pem_key_cert_pairs.push_back(pem_key_cert_pair);
-
-	auto server_creds = grpc::SslServerCredentials(ssl_opts);
-
-	// Build server listening on VPN interface
-	std::string server_address = std::format("{}:{}", LOCAL_MASTER_VPN_IP, LOCAL_MASTER_gRPC_PORT);
-	grpc::ServerBuilder builder;
-
-	builder.AddListeningPort(server_address, server_creds);
-	builder.SetMaxMessageSize(64 * 1024 * 1024); // 64 MB max message size (loads)
-	builder.SetMaxReceiveMessageSize(64 * 1024 * 1024);
-
-	builder.RegisterService(&service);
-
-	// Build and start
-	std::unique_ptr<grpc::Server> server(builder.BuildAndStart());
-	std::cout << "Master node listening on " << server_address << std::endl;
-	std::cout << "Accessible via public IP: " << LOCAL_MASTER_PUBLIC_IP << std::endl;
-
-	std::thread monitor_thread([&service]() {
-		while (true) {
-			std::this_thread::sleep_for(std::chrono::seconds(5));
-			service.PrintAllWorkersConnStatus();
-		}
-	});
-
-	// Wait for server to shutdown (blocking)
-	server->Wait();
-
-	// Join monitor thread when shutting down
-	monitor_thread.join();
-
-	return 0;
-	
+	if (service_ptr) {
+		service_ptr->Shutdown();
+	}
+	if (server) {
+		server->Shutdown();
+	}
 }
-
