@@ -70,8 +70,8 @@ public:
 		}
 
 		enum HeartbeatResponse {
-			CONTINUE = 0, // = 0
-			STOP = 1 // = 1
+			CONTINUE = 0,
+			STOP = 1
 		};
 
 		//// TODO: INSERT LOGIC TO EVALUATE HEALTH OF WORKER AND SEND REPONSE CODE

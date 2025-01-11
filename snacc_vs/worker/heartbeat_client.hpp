@@ -14,7 +14,7 @@ private:
 	std::string client_cert_path_;
 	std::string client_key_path_;
 	std::unique_ptr<heartbeat::HeartbeatService::Stub> stub_;
-	std::atomic<bool> running_{ true };
+	std::atomic<bool> running_{ false };
 	std::string last_error_;
 
 	std::shared_ptr<grpc::Channel> CreateChannel();

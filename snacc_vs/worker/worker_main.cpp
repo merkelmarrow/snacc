@@ -7,6 +7,7 @@
 #include <thread>
 #include <iostream>
 
+
 SystemMonitor* monitor_ptr = nullptr;
 HeartbeatClient* client_ptr = nullptr;
 

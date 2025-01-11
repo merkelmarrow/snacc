@@ -22,10 +22,10 @@ target_link_libraries (worker PRIVATE
 )
 
 # Copy SSL certificates to build directory
-add_custom_command(TARGET worker POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_SOURCE_DIR}/certs/ca.crt
-        ${CMAKE_SOURCE_DIR}/certs/client.crt
-        ${CMAKE_SOURCE_DIR}/certs/client.key
-        $<TARGET_FILE_DIR:worker>
-)
+# add_custom_command(TARGET worker POST_BUILD
+#    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#        ${CMAKE_SOURCE_DIR}/certs/ca.crt
+#        ${CMAKE_SOURCE_DIR}/certs/client.crt
+#        ${CMAKE_SOURCE_DIR}/certs/client.key
+#        $<TARGET_FILE_DIR:worker>
+#)

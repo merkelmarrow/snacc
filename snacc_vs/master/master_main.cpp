@@ -24,6 +24,9 @@
 #include "secrets.h"
 #include <format>
 
+// for linux/unix 
+// #include <unistd.h>
+
 // globals
 std::unique_ptr<grpc::Server> server;
 HeartbeatServiceImpl* service_ptr = nullptr;
