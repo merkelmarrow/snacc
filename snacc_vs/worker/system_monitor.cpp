@@ -47,3 +47,41 @@ bool SystemMonitor::Initialise() {
 	return true;
 }
 
+float SystemMonitor::GetCPUUsage() {
+	if (!cpu_query_ || !cpu_counter_) {
+		SetLastError("SystemMonitor not initialised");
+		return -1.0f;
+	}
+
+	PDH_STATUS status = PdhCollectQueryData(cpu_query_);
+	if (status != ERROR_SUCCESS) {
+		SetLastError("Failed to collect CPU data");
+		return -1.0f;
+	}
+
+	PDH_FMT_COUNTERVALUE counterVal;
+	status = PdhGetFormattedCounterValue(
+		cpu_counter_,
+		PDH_FMT_DOUBLE,
+		NULL,
+		&counterVal);
+
+	if (status != ERROR_SUCCESS) {
+		SetLastError("Failed to format CPU counter value");
+		return -1.0f;
+	}
+
+	return static_cast<float>(counterVal.doubleValue);
+}
+
+float SystemMonitor::GetMemoryUsage() {
+	MEMORYSTATUSEX memInfo;
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+
+	if (!GlobalMemoryStatusEx(&memInfo)) {
+		SetLastError("Failed to get memory status");
+		return -1.0f;
+	}
+
+	return static_cast<float>(memInfo.dwMemoryLoad);
+}

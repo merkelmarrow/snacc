@@ -11,3 +11,4 @@ if (POLICY CMP0141)
 endif()
 
 add_subdirectory (master)
+add_subdirectory (worker)

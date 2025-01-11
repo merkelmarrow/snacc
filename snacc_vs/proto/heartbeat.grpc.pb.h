@@ -29,216 +29,221 @@
 
 namespace heartbeat {
 
-// gRPC service definition
-class HeartbeatService final {
- public:
-  static constexpr char const* service_full_name() {
-    return "heartbeat.HeartbeatService";
-  }
-  class StubInterface {
-   public:
-    virtual ~StubInterface() {}
-    // Worker calls this every 10s to report health
-    virtual ::grpc::Status SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::heartbeat::HeartbeatReply* response) = 0;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>> AsyncSendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>>(AsyncSendHeartbeatRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>> PrepareAsyncSendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>>(PrepareAsyncSendHeartbeatRaw(context, request, cq));
-    }
-    class async_interface {
-     public:
-      virtual ~async_interface() {}
-      // Worker calls this every 10s to report health
-      virtual void SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
-    };
-    typedef class async_interface experimental_async_interface;
-    virtual class async_interface* async() { return nullptr; }
-    class async_interface* experimental_async() { return async(); }
-   private:
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>* AsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) = 0;
-    virtual ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>* PrepareAsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) = 0;
-  };
-  class Stub final : public StubInterface {
-   public:
-    Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
-    ::grpc::Status SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::heartbeat::HeartbeatReply* response) override;
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>> AsyncSendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>>(AsyncSendHeartbeatRaw(context, request, cq));
-    }
-    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>> PrepareAsyncSendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
-      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>>(PrepareAsyncSendHeartbeatRaw(context, request, cq));
-    }
-    class async final :
-      public StubInterface::async_interface {
-     public:
-      void SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, std::function<void(::grpc::Status)>) override;
-      void SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, ::grpc::ClientUnaryReactor* reactor) override;
-     private:
-      friend class Stub;
-      explicit async(Stub* stub): stub_(stub) { }
-      Stub* stub() { return stub_; }
-      Stub* stub_;
-    };
-    class async* async() override { return &async_stub_; }
+	// gRPC service definition
+	class HeartbeatService final {
+	public:
+		static constexpr char const* service_full_name() {
+			return "heartbeat.HeartbeatService";
+		}
+		class StubInterface {
+		public:
+			virtual ~StubInterface() {}
+			// Worker calls this every 10s to report health
+			virtual ::grpc::Status SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::heartbeat::HeartbeatReply* response) = 0;
+			std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>> AsyncSendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
+				return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>>(AsyncSendHeartbeatRaw(context, request, cq));
+			}
+			std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>> PrepareAsyncSendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
+				return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>>(PrepareAsyncSendHeartbeatRaw(context, request, cq));
+			}
+			class async_interface {
+			public:
+				virtual ~async_interface() {}
+				// Worker calls this every 10s to report health
+				virtual void SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, std::function<void(::grpc::Status)>) = 0;
+				virtual void SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+			};
+			typedef class async_interface experimental_async_interface;
+			virtual class async_interface* async() { return nullptr; }
+			class async_interface* experimental_async() { return async(); }
+		private:
+			virtual ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>* AsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) = 0;
+			virtual ::grpc::ClientAsyncResponseReaderInterface< ::heartbeat::HeartbeatReply>* PrepareAsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) = 0;
+		};
+		class Stub final : public StubInterface {
+		public:
+			Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+			::grpc::Status SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::heartbeat::HeartbeatReply* response) override;
+			std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>> AsyncSendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
+				return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>>(AsyncSendHeartbeatRaw(context, request, cq));
+			}
+			std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>> PrepareAsyncSendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) {
+				return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>>(PrepareAsyncSendHeartbeatRaw(context, request, cq));
+			}
+			class async final :
+				public StubInterface::async_interface {
+			public:
+				void SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, std::function<void(::grpc::Status)>) override;
+				void SendHeartbeat(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+			private:
+				friend class Stub;
+				explicit async(Stub* stub) : stub_(stub) { }
+				Stub* stub() { return stub_; }
+				Stub* stub_;
+			};
+			class async* async() override { return &async_stub_; }
 
-   private:
-    std::shared_ptr< ::grpc::ChannelInterface> channel_;
-    class async async_stub_{this};
-    ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>* AsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) override;
-    ::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>* PrepareAsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) override;
-    const ::grpc::internal::RpcMethod rpcmethod_SendHeartbeat_;
-  };
-  static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+		private:
+			std::shared_ptr< ::grpc::ChannelInterface> channel_;
+			class async async_stub_ { this };
+			::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>* AsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) override;
+			::grpc::ClientAsyncResponseReader< ::heartbeat::HeartbeatReply>* PrepareAsyncSendHeartbeatRaw(::grpc::ClientContext* context, const ::heartbeat::HeartbeatRequest& request, ::grpc::CompletionQueue* cq) override;
+			const ::grpc::internal::RpcMethod rpcmethod_SendHeartbeat_;
+		};
+		static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
-  class Service : public ::grpc::Service {
-   public:
-    Service();
-    virtual ~Service();
-    // Worker calls this every 10s to report health
-    virtual ::grpc::Status SendHeartbeat(::grpc::ServerContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response);
-  };
-  template <class BaseClass>
-  class WithAsyncMethod_SendHeartbeat : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithAsyncMethod_SendHeartbeat() {
-      ::grpc::Service::MarkMethodAsync(0);
-    }
-    ~WithAsyncMethod_SendHeartbeat() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestSendHeartbeat(::grpc::ServerContext* context, ::heartbeat::HeartbeatRequest* request, ::grpc::ServerAsyncResponseWriter< ::heartbeat::HeartbeatReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  typedef WithAsyncMethod_SendHeartbeat<Service > AsyncService;
-  template <class BaseClass>
-  class WithCallbackMethod_SendHeartbeat : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithCallbackMethod_SendHeartbeat() {
-      ::grpc::Service::MarkMethodCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response) { return this->SendHeartbeat(context, request, response); }));}
-    void SetMessageAllocatorFor_SendHeartbeat(
-        ::grpc::MessageAllocator< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
-      static_cast<::grpc::internal::CallbackUnaryHandler< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>*>(handler)
-              ->SetMessageAllocator(allocator);
-    }
-    ~WithCallbackMethod_SendHeartbeat() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* SendHeartbeat(
-      ::grpc::CallbackServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/)  { return nullptr; }
-  };
-  typedef WithCallbackMethod_SendHeartbeat<Service > CallbackService;
-  typedef CallbackService ExperimentalCallbackService;
-  template <class BaseClass>
-  class WithGenericMethod_SendHeartbeat : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithGenericMethod_SendHeartbeat() {
-      ::grpc::Service::MarkMethodGeneric(0);
-    }
-    ~WithGenericMethod_SendHeartbeat() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-  };
-  template <class BaseClass>
-  class WithRawMethod_SendHeartbeat : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawMethod_SendHeartbeat() {
-      ::grpc::Service::MarkMethodRaw(0);
-    }
-    ~WithRawMethod_SendHeartbeat() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    void RequestSendHeartbeat(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
-    }
-  };
-  template <class BaseClass>
-  class WithRawCallbackMethod_SendHeartbeat : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithRawCallbackMethod_SendHeartbeat() {
-      ::grpc::Service::MarkMethodRawCallback(0,
-          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-            [this](
-                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SendHeartbeat(context, request, response); }));
-    }
-    ~WithRawCallbackMethod_SendHeartbeat() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable synchronous version of this method
-    ::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    virtual ::grpc::ServerUnaryReactor* SendHeartbeat(
-      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
-  };
-  template <class BaseClass>
-  class WithStreamedUnaryMethod_SendHeartbeat : public BaseClass {
-   private:
-    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
-   public:
-    WithStreamedUnaryMethod_SendHeartbeat() {
-      ::grpc::Service::MarkMethodStreamed(0,
-        new ::grpc::internal::StreamedUnaryHandler<
-          ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>(
-            [this](::grpc::ServerContext* context,
-                   ::grpc::ServerUnaryStreamer<
-                     ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>* streamer) {
-                       return this->StreamedSendHeartbeat(context,
-                         streamer);
-                  }));
-    }
-    ~WithStreamedUnaryMethod_SendHeartbeat() override {
-      BaseClassMustBeDerivedFromService(this);
-    }
-    // disable regular version of this method
-    ::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
-      abort();
-      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
-    }
-    // replace default version of method with streamed unary
-    virtual ::grpc::Status StreamedSendHeartbeat(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::heartbeat::HeartbeatRequest,::heartbeat::HeartbeatReply>* server_unary_streamer) = 0;
-  };
-  typedef WithStreamedUnaryMethod_SendHeartbeat<Service > StreamedUnaryService;
-  typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_SendHeartbeat<Service > StreamedService;
-};
+		class Service : public ::grpc::Service {
+		public:
+			Service();
+			virtual ~Service();
+			// Worker calls this every 10s to report health
+			virtual ::grpc::Status SendHeartbeat(::grpc::ServerContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response);
+		};
+		template <class BaseClass>
+		class WithAsyncMethod_SendHeartbeat : public BaseClass {
+		private:
+			void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+		public:
+			WithAsyncMethod_SendHeartbeat() {
+				::grpc::Service::MarkMethodAsync(0);
+			}
+			~WithAsyncMethod_SendHeartbeat() override {
+				BaseClassMustBeDerivedFromService(this);
+			}
+			// disable synchronous version of this method
+			::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
+				abort();
+				return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+			}
+			void RequestSendHeartbeat(::grpc::ServerContext* context, ::heartbeat::HeartbeatRequest* request, ::grpc::ServerAsyncResponseWriter< ::heartbeat::HeartbeatReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void* tag) {
+				::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+			}
+		};
+		typedef WithAsyncMethod_SendHeartbeat<Service > AsyncService;
+		template <class BaseClass>
+		class WithCallbackMethod_SendHeartbeat : public BaseClass {
+		private:
+			void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+		public:
+			WithCallbackMethod_SendHeartbeat() {
+				::grpc::Service::MarkMethodCallback(0,
+					new ::grpc::internal::CallbackUnaryHandler< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>(
+						[this](
+							::grpc::CallbackServerContext* context, const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response) { return this->SendHeartbeat(context, request, response); }));
+			}
+			void SetMessageAllocatorFor_SendHeartbeat(
+				::grpc::MessageAllocator< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>* allocator) {
+				::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+				static_cast<::grpc::internal::CallbackUnaryHandler< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>*>(handler)
+					->SetMessageAllocator(allocator);
+			}
+			~WithCallbackMethod_SendHeartbeat() override {
+				BaseClassMustBeDerivedFromService(this);
+			}
+			// disable synchronous version of this method
+			::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
+				abort();
+				return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+			}
+			virtual ::grpc::ServerUnaryReactor* SendHeartbeat(
+				::grpc::CallbackServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) {
+				return nullptr;
+			}
+		};
+		typedef WithCallbackMethod_SendHeartbeat<Service > CallbackService;
+		typedef CallbackService ExperimentalCallbackService;
+		template <class BaseClass>
+		class WithGenericMethod_SendHeartbeat : public BaseClass {
+		private:
+			void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+		public:
+			WithGenericMethod_SendHeartbeat() {
+				::grpc::Service::MarkMethodGeneric(0);
+			}
+			~WithGenericMethod_SendHeartbeat() override {
+				BaseClassMustBeDerivedFromService(this);
+			}
+			// disable synchronous version of this method
+			::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
+				abort();
+				return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+			}
+		};
+		template <class BaseClass>
+		class WithRawMethod_SendHeartbeat : public BaseClass {
+		private:
+			void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+		public:
+			WithRawMethod_SendHeartbeat() {
+				::grpc::Service::MarkMethodRaw(0);
+			}
+			~WithRawMethod_SendHeartbeat() override {
+				BaseClassMustBeDerivedFromService(this);
+			}
+			// disable synchronous version of this method
+			::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
+				abort();
+				return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+			}
+			void RequestSendHeartbeat(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void* tag) {
+				::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+			}
+		};
+		template <class BaseClass>
+		class WithRawCallbackMethod_SendHeartbeat : public BaseClass {
+		private:
+			void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+		public:
+			WithRawCallbackMethod_SendHeartbeat() {
+				::grpc::Service::MarkMethodRawCallback(0,
+					new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+						[this](
+							::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SendHeartbeat(context, request, response); }));
+			}
+			~WithRawCallbackMethod_SendHeartbeat() override {
+				BaseClassMustBeDerivedFromService(this);
+			}
+			// disable synchronous version of this method
+			::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
+				abort();
+				return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+			}
+			virtual ::grpc::ServerUnaryReactor* SendHeartbeat(
+				::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/) {
+				return nullptr;
+			}
+		};
+		template <class BaseClass>
+		class WithStreamedUnaryMethod_SendHeartbeat : public BaseClass {
+		private:
+			void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+		public:
+			WithStreamedUnaryMethod_SendHeartbeat() {
+				::grpc::Service::MarkMethodStreamed(0,
+					new ::grpc::internal::StreamedUnaryHandler<
+					::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>(
+						[this](::grpc::ServerContext* context,
+							::grpc::ServerUnaryStreamer<
+							::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>* streamer) {
+								return this->StreamedSendHeartbeat(context,
+									streamer);
+						}));
+			}
+			~WithStreamedUnaryMethod_SendHeartbeat() override {
+				BaseClassMustBeDerivedFromService(this);
+			}
+			// disable regular version of this method
+			::grpc::Status SendHeartbeat(::grpc::ServerContext* /*context*/, const ::heartbeat::HeartbeatRequest* /*request*/, ::heartbeat::HeartbeatReply* /*response*/) override {
+				abort();
+				return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+			}
+			// replace default version of method with streamed unary
+			virtual ::grpc::Status StreamedSendHeartbeat(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::heartbeat::HeartbeatRequest, ::heartbeat::HeartbeatReply>* server_unary_streamer) = 0;
+		};
+		typedef WithStreamedUnaryMethod_SendHeartbeat<Service > StreamedUnaryService;
+		typedef Service SplitStreamedService;
+		typedef WithStreamedUnaryMethod_SendHeartbeat<Service > StreamedService;
+	};
 
 }  // namespace heartbeat
 

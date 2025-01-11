@@ -31,7 +31,7 @@ HeartbeatServiceImpl* service_ptr = nullptr;
 std::string read_file(const std::string& filename);
 
 
-int main (int argc, char** argv) {
+int main(int argc, char** argv) {
 	// Register signal handlers
 	signal(SIGINT, SignalHandler);
 	signal(SIGTERM, SignalHandler);
@@ -52,7 +52,7 @@ int main (int argc, char** argv) {
 			std::cerr << "Failed to read SSL certs: " << e.what() << std::endl;
 			return 1;
 		}
-		
+
 		grpc::SslServerCredentialsOptions ssl_opts;
 		ssl_opts.pem_root_certs = read_file(LOCAL_PATH_TO_SERVER_ROOT_CERTS);
 		ssl_opts.pem_key_cert_pairs.push_back(pem_key_cert_pair);
@@ -91,7 +91,7 @@ int main (int argc, char** argv) {
 				std::cerr << "Monitor thread error: " << e.what() << std::endl;
 				SignalHandler(SIGTERM);
 			}
-		});
+			});
 
 		// Wait for server to shutdown (blocking)
 		server->Wait();
