@@ -18,7 +18,7 @@
 #include <iostream> 
 
 // for signal handling for graceful shutdown
-#include <signal.h>
+#include <csignal>
 
 // for local specific paths and values (to be replaced with general later)
 #include "secrets.h"
@@ -28,6 +28,8 @@
 std::unique_ptr<grpc::Server> server;
 HeartbeatServiceImpl* service_ptr = nullptr;
 
+
+void SignalHandler(int32_t signum);
 std::string read_file(const std::string& filename);
 
 
