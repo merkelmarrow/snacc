@@ -35,8 +35,8 @@ std::string read_file(const std::string& filename);
 
 int main(int argc, char** argv) {
 	// Register signal handlers
-	signal(SIGINT, SignalHandler);
-	signal(SIGTERM, SignalHandler);
+	std::signal(SIGINT, SignalHandler);
+	std::signal(SIGTERM, SignalHandler);
 
 	try {
 		// Create service instance

@@ -13,7 +13,7 @@ HeartbeatClient* client_ptr = nullptr;
 void SignalHandler(int32_t signum);
 
 int main(int argc, char* argv[]) {
-	if (argv != 6) {
+	if (argc != 6) {
 		std::cerr << "Usage: " << argv[0] << " <worker_id> <server_address> "
 			<< "<root_cert_path> <client_cert_path> <client_key_path>" << std::endl;
 		return 1;
@@ -27,8 +27,8 @@ int main(int argc, char* argv[]) {
 		std::string client_key_path = argv[5];
 
 		// Register signal handlers
-		signal(SIGINT, SignalHandler);
-		signal(SIGTERM, SignalHandler);
+		std::signal(SIGINT, SignalHandler);
+		std::signal(SIGTERM, SignalHandler);
 
 		// Initialise system monitor
 		SystemMonitor monitor;
@@ -49,6 +49,7 @@ int main(int argc, char* argv[]) {
 			std::cerr
 				<< "Failed to initialise client: "
 				<< client.GetLastError() << std::endl;
+			return 1;
 		}
 
 		std::cout << "Worker started. Sending heartbeats to " << server_address << std::endl;
@@ -69,7 +70,7 @@ int main(int argc, char* argv[]) {
 				std::cerr << "Failed to send heartbeat: "
 					<< client.GetLastError() << std::endl;
 
-				if (!client.IsRunning) {
+				if (!client.IsRunning()) {
 					std::cout << "Server requested stop. Shutting down..." << std::endl;
 					break;
 				}

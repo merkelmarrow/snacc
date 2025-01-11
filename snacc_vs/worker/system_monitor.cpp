@@ -23,7 +23,7 @@ void SystemMonitor::SetLastError(const std::string& error) {
 
 bool SystemMonitor::Initialise() {
 	PDH_STATUS status = PdhOpenQuery(NULL, 0, &cpu_query_);
-	if (status != ERORR_SUCCESS) {
+	if (status != ERROR_SUCCESS) {
 		SetLastError("Failed to open PDH query");
 		return false;
 	}
