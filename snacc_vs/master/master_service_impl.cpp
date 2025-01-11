@@ -42,7 +42,23 @@ private:
 	std::mutex mutex_;
 	std::unordered_map<int32_t, std::chrono::steady_clock::time_point> last_heartbeat_; // workerID (int32_t), timestamp (time_point)
 
+	// For clean shutdown
+	std::atomic<bool> running_{ true };
+
 public:
+
+	~HeartbeatServiceImpl() {
+		running_ = false;
+	}
+
+	void Shutdown() {
+		running_ = false;
+	}
+
+	bool IsRunning() const {
+		return running_;
+	}
+
 	::grpc::Status SendHeartbeat(::grpc::ServerContext* context,
 		const ::heartbeat::HeartbeatRequest* request, ::heartbeat::HeartbeatReply* response) override {
 		// 1. Get current timestamp
