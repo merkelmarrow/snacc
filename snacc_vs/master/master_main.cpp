@@ -41,6 +41,20 @@ int main(int argc, char** argv) {
 	std::signal(SIGINT, SignalHandler);
 	std::signal(SIGTERM, SignalHandler);
 
+	// Validate paths
+	if (!std::filesystem::exists(SERVER_KEY_PATH)) {
+		std::cerr << "Server key file not found: " << SERVER_KEY_PATH << std::endl;
+		return 1;
+	}
+	if (!std::filesystem::exists(SERVER_CRT_PATH)) {
+		std::cerr << "Server certificate file not found: " << SERVER_CRT_PATH << std::endl;
+		return 1;
+	}
+	if (!std::filesystem::exists(SERVER_ROOT_CERTS)) {
+		std::cerr << "Root certificates file not found: " << SERVER_ROOT_CERTS << std::endl;
+		return 1;
+	}
+
 	try {
 		// Create service instance
 		HeartbeatServiceImpl service;
@@ -48,24 +62,27 @@ int main(int argc, char** argv) {
 
 		// Set up SSL creds
 		grpc::SslServerCredentialsOptions::PemKeyCertPair pem_key_cert_pair;
-
+		
 		try {
-			pem_key_cert_pair.private_key = read_file(LOCAL_PATH_TO_SERVER_KEY);
-			pem_key_cert_pair.cert_chain = read_file(LOCAL_PATH_TO_SERVER_CRT);
+			pem_key_cert_pair.private_key = read_file(std::getenv("SERVER_KEY_PATH") ? std::getenv("SERVER_KEY_PATH") : SERVER_KEY_PATH);
+			pem_key_cert_pair.cert_chain = read_file(std::getenv("SERVER_CRT_PATH") ? std::getenv("SERVER_CRT_PATH") : SERVER_CRT_PATH);
 		}
 		catch (const std::runtime_error& e) {
 			std::cerr << "Failed to read SSL certs: " << e.what() << std::endl;
 			return 1;
 		}
-
+		
 		grpc::SslServerCredentialsOptions ssl_opts;
-		ssl_opts.pem_root_certs = read_file(LOCAL_PATH_TO_SERVER_ROOT_CERTS);
+		ssl_opts.pem_root_certs = read_file(std::getenv("SERVER_ROOT_CERTS") ? std::getenv("SERVER_ROOT_CERTS") : SERVER_ROOT_CERTS);
 		ssl_opts.pem_key_cert_pairs.push_back(pem_key_cert_pair);
 
 		auto server_creds = grpc::SslServerCredentials(ssl_opts);
 
+		
 		// Build server listening on VPN interface
-		std::string server_address = std::format("{}:{}", LOCAL_MASTER_VPN_IP, LOCAL_MASTER_gRPC_PORT);
+		std::string server_address = std::format("{}:{}", 
+			std::getenv("MASTER_VPN_IP") ? std::getenv("MASTER_VPN_IP") : MASTER_VPN_IP,
+			std::getenv("MASTER_GRPC_PORT") ? std::getenv("MASTER_GRPC_PORT") : MASTER_GRPC_PORT);
 		grpc::ServerBuilder builder;
 
 		builder.AddListeningPort(server_address, server_creds);
@@ -82,7 +99,7 @@ int main(int argc, char** argv) {
 		}
 
 		std::cout << "Master node listening on " << server_address << std::endl;
-		std::cout << "Accessible via public IP: " << LOCAL_MASTER_PUBLIC_IP << std::endl;
+		std::cout << "Accessible via public IP: " << MASTER_PUBLIC_IP << std::endl;
 
 		// Monitoring thread
 		std::thread monitor_thread([&service]() {
