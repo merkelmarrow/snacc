@@ -34,6 +34,7 @@ HeartbeatServiceImpl* service_ptr = nullptr;
 
 void SignalHandler(int32_t signum);
 std::string read_file(const std::string& filename);
+bool isValidPort(const std::string& port);
 
 
 int main(int argc, char** argv) {
@@ -79,6 +80,10 @@ int main(int argc, char** argv) {
 		auto server_creds = grpc::SslServerCredentials(ssl_opts);
 
 		
+		if (!isValidPort(MASTER_GRPC_PORT)) {
+			std::cerr << "Invalid grpc port: " << MASTER_GRPC_PORT << std::endl;
+			return 1;
+		}
 		// Build server listening on VPN interface
 		std::string server_address = std::format("{}:{}", 
 			std::getenv("MASTER_VPN_IP") ? std::getenv("MASTER_VPN_IP") : MASTER_VPN_IP,
@@ -154,5 +159,15 @@ void SignalHandler(int32_t signum) {
 	}
 	if (server) {
 		server->Shutdown();
+	}
+}
+
+bool isValidPort(const std::string& port) {
+	try {
+		int port_num = std::stoi(port);
+		return port_num >= 0 && port_num <= 65535;
+	}
+	catch (...) {
+		return false;
 	}
 }
