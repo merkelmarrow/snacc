@@ -74,9 +74,23 @@ namespace {
 	// create a shared_ptr<grpc::Channel> that actually returns the mock stub
 	// cast from MockChannel to a grpc::Channel*
 	std::shared_ptr<grpc::Channel> CreateMockChannel(std::shared_ptr<MockHeartbeatServiceStub> mock_stub) {
-		auto ch = std::make_shared<MockChannel>(std::move(mock_stub));
+		// 1. Create a std::shared_ptr for MockChannel
+		std::shared_ptr<MockChannel> channel_impl = std::make_shared<MockChannel>(std::move(mock_stub));
+
+		// 2. Because MockChannel derives from grpc::ChannelInterface (not grpc::Channel),
+		//    static_cast<grpc::Channel*>(...) fails. We must use reinterpret_cast.
+		grpc::Channel* raw_channel_ptr = reinterpret_cast<grpc::Channel*>(channel_impl.get());
+
+		// 3. Return a shared_ptr<grpc::Channel> that captures channel_impl in the deleter,
+		//    ensuring it remains alive as long as the returned pointer exists.
 		return std::shared_ptr<grpc::Channel>(
-			reinterpret_cast<grpc::Channel*>(ch.get()), [](grpc::Channel*) { /* no-op custom deleter*/ }
+			raw_channel_ptr,
+			// This lambda "deleter" captures channel_impl by value; no actual deletion is done,
+			// but capturing channel_impl keeps it alive until the last shared_ptr<grpc::Channel> goes out of scope.
+			[channel_impl](grpc::Channel*) {
+				// no-op: when the shared_ptr<grpc::Channel> is destroyed,
+				// channel_impl's use count is decremented, freeing the MockChannel if no other references exist.
+			}
 		);
 	}
 } // end anonymous namespace
