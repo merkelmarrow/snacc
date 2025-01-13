@@ -35,11 +35,11 @@ target_link_libraries (heartbeat_proto PUBLIC
 	gRPC::grpc++
 	gRPC::grpc++_reflection
 	magic_enum::magic_enum
-	if(WIN32)
-		pdh
-		psapi
-	endif()
 )
+
+if(WIN32)
+  target_link_libraries(heartbeat_proto PUBLIC pdh psapi)
+endif()
 
 add_executable (master
 	master_main.cpp
