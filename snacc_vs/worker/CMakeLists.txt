@@ -28,12 +28,6 @@ endif()
 
 find_package(GTest CONFIG REQUIRED)
 
-target_link_libraries(worker PRIVATE
-	GTest::gtest
-	GTest::gtest_main
-	GTest::gmock
-	GTest::gmock_main
-)
 
 add_subdirectory(tests)
 
