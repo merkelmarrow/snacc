@@ -16,6 +16,12 @@ find_package (gRPC CONFIG REQUIRED)
 find_package (ZLIB REQUIRED)
 find_package(magic_enum CONFIG REQUIRED)
 
+# If using pthread explicitly on Linux (sometimes needed)
+if(UNIX AND NOT APPLE)
+  set(THREADS_PREFER_PTHREAD_FLAG ON)
+  find_package(Threads REQUIRED)
+endif()
+
 add_library (heartbeat_proto STATIC
 	${CMAKE_CURRENT_SOURCE_DIR}/../proto/heartbeat.pb.cc
 	${CMAKE_CURRENT_SOURCE_DIR}/../proto/heartbeat.grpc.pb.cc
@@ -35,11 +41,16 @@ target_link_libraries (heartbeat_proto PUBLIC
 	gRPC::grpc++
 	gRPC::grpc++_reflection
 	magic_enum::magic_enum
-	if(WIN32)
-		pdh
-		psapi
-	endif()
 )
+
+# Link pthread if on Linux
+if(UNIX AND NOT APPLE)
+  target_link_libraries(heartbeat_proto PRIVATE Threads::Threads)
+endif()
+
+if(WIN32)
+  target_link_libraries(heartbeat_proto PUBLIC pdh psapi)
+endif()
 
 add_executable (master
 	master_main.cpp
@@ -50,5 +61,19 @@ target_link_libraries (master PRIVATE
 	heartbeat_proto
 )
 
+add_compile_definitions(
+    SERVER_KEY_PATH=\"${MY_SERVER_KEY_PATH}\"
+    SERVER_CRT_PATH=\"${MY_SERVER_CRT_PATH}\"
+    SERVER_ROOT_CERTS=\"${MY_SERVER_ROOT_CERTS}\"
+    MASTER_VPN_IP=\"${MY_MASTER_VPN_IP}\"
+    MASTER_PUBLIC_IP=\"${MY_MASTER_PUBLIC_IP}\"
+    MASTER_GRPC_PORT=\"${MY_MASTER_GRPC_PORT}\"
+)
 
-   
+#### Example CMAke build
+#cmake -DCUSTOM_SERVER_KEY_PATH="/custom/path/to/server.key" \
+#      -DCUSTOM_SERVER_CRT_PATH="/custom/path/to/server.crt" \
+#      -DCUSTOM_SERVER_ROOT_CERTS="/custom/path/to/ca.crt" \
+#      -DCUSTOM_MASTER_VPN_IP="192.168.1.1" \
+#      -DCUSTOM_MASTER_PUBLIC_IP="203.0.113.1" \
+#      -DCUSTOM_MASTER_GRPC_PORT="60051" ..
