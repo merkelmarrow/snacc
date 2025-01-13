@@ -80,3 +80,34 @@ namespace {
 		);
 	}
 } // end anonymous namespace
+
+
+// TEST 1
+// Verify that client can initialise successfully when cert files are present
+TEST(HeartbeatClientTest, InitialiseSuccess) {
+	// 1. Mock FileReader so it returns dummy cert data
+	MockFileReader mock_file_reader;
+	EXPECT_CALL(mock_file_reader, Read("root.crt"))
+		.WillOnce(::testing::Return("roots cert data"));
+	EXPECT_CALL(mock_file_reader, Read("client.crt"))
+		.WillOnce(::testing::Return("client_certs_data"));
+	EXPECT_CALL(mock_file_reader, Read("client.key"))
+		.WillOnce(::testing::Return("client_key_data"));
+
+	// 2. Instantiate client
+	HeartbeatClient client(
+		"localhost:50051",
+		"root.crt",
+		"client.crt",
+		"client.key",
+		mock_file_reader
+	);
+
+	// 3. Act
+	bool ok = client.Initialise();
+
+	// 4. Assert 
+	EXPECT_TRUE(ok);
+	EXPECT_TRUE(client.IsRunning());
+	EXPECT_TRUE(client.GetLastError(), "");
+}
