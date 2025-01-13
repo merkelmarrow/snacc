@@ -66,11 +66,16 @@ private:
 	std::string root_cert_path_;
 	std::string client_cert_path_;
 	std::string client_key_path_;
+
+	IFileReader& file_reader_;
+
 	std::unique_ptr<heartbeat::HeartbeatService::Stub> stub_;
-	std::atomic<bool> running_{ false };
+	std::atomic<bool> running_{ true };
 	std::string last_error_;
 
 	std::shared_ptr<grpc::Channel> CreateChannel();
 	void SetLastError(const std::string& error);
-	std::string ReadFile(const std::string& path);
+	bool LoadCerts(std::string& root_certs,
+		std::string& client_certs,
+		std::string& client_key);
 };

@@ -2,62 +2,69 @@
 
 #include "heartbeat_client.hpp"
 #include <grpcpp/grpcpp.h>
-#include <fstream>
+#include <sstream>
 
 HeartbeatClient::HeartbeatClient(
 	const std::string& server_address,
 	const std::string& root_cert_path,
 	const std::string& client_cert_path,
-	const std::string& client_key_path)
+	const std::string& client_key_path,
+	IFileReader& file_reader
+	)
 	: server_address_(server_address),
 	root_cert_path_(root_cert_path),
 	client_cert_path_(client_cert_path),
-	client_key_path_(client_key_path) {}
+	client_key_path_(client_key_path),
+	file_reader_(file_reader) {}
 
-std::string HeartbeatClient::ReadFile(const std::string& path) {
-	std::filesystem::path filepath(path);
-	if (!std::filesystem::exists(filepath)) {
-		throw std::runtime_error("File not found: " + path);
-	}
-
-	std::ifstream file(filepath, std::ios::binary);
-	if (!file.is_open()) {
-		throw std::runtime_error("Failed to open file: " + path);
-	}
-
-	std::stringstream buffer;
-	buffer << file.rdbuf();
-	return buffer.str();
-}
 
 void HeartbeatClient::SetLastError(const std::string& error) {
 	last_error_ = error;
 }
 
-std::shared_ptr<grpc::Channel> HeartbeatClient::CreateChannel() {
+bool HeartbeatClient::LoadCerts(std::string& root_certs,
+	std::string& client_certs,
+	std::string& client_key) {
 	try {
-		grpc::SslCredentialsOptions ssl_opts;
-		ssl_opts.pem_root_certs = ReadFile(root_cert_path_);
-		ssl_opts.pem_cert_chain = ReadFile(client_cert_path_);
-		ssl_opts.pem_private_key = ReadFile(client_key_path_);
-
-		auto channel_creds = grpc::SslCredentials(ssl_opts);
-
-		grpc::ChannelArguments args;
-		args.SetMaxReceiveMessageSize(64 * 1024 * 1024); // 64 MB
-		args.SetMaxSendMessageSize(64 * 1024 * 1024); // 64 MB
-
-		return grpc::CreateCustomChannel(server_address_, channel_creds, args);
+		root_certs = file_reader_.Read(root_cert_path_);
+		client_certs = file_reader_.Read(client_cert_path_);
+		client_key = file_reader_.Read(client_key_path_);
 	}
 	catch (const std::exception& e) {
-		SetLastError(std::string("Failed to create channel: ") + e.what());
+		SetLastError(std::string("Certificate Error: ") + e.what());
+		return false;
+	}
+	return true;
+}
+
+std::shared_ptr<grpc::Channel> HeartbeatClient::CreateChannel() {
+
+	std::string root_certs;
+	std::string client_certs;
+	std::string client_key;
+
+	if (!LoadCerts(root_certs, client_certs, client_key)) {
 		return nullptr;
 	}
+
+	grpc::SslCredentialsOptions ssl_opts;
+	ssl_opts.pem_root_certs = root_certs;
+	ssl_opts.pem_cert_chain = client_certs;
+	ssl_opts.pem_private_key = client_key;
+
+	auto channel_creds = grpc::SslCredentials(ssl_opts);
+	grpc::ChannelArguments args;
+	args.SetMaxReceiveMessageSize(64 * 1024 * 1024); // 64 MB
+	args.SetMaxSendMessageSize(64 * 1024 * 1024);    // 64 MB
+
+	return grpc::CreateCustomChannel(server_address_, channel_creds, args);
 }
 
 bool HeartbeatClient::Initialise() {
 	auto channel = CreateChannel();
 	if (!channel) {
+		// LoadCerts or channel creation failed
+		running_ = false;
 		return false;
 	}
 
@@ -79,7 +86,6 @@ bool HeartbeatClient::SendHeartbeat(int32_t worker_id, float cpu_usage, float me
 
 	heartbeat::HeartbeatReply reply;
 	grpc::ClientContext context;
-
 	std::chrono::system_clock::time_point deadline = std::chrono::system_clock::now() + std::chrono::seconds(5);
 	context.set_deadline(deadline);
 
