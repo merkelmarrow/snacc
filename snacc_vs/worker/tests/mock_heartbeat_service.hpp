@@ -14,7 +14,7 @@
 // };
 
 
-class MockHeartbeatService : public heartbeat::HeartbeatService::StubInterface {
+class MockHeartbeatServiceStub : public heartbeat::HeartbeatService::StubInterface {
 public:
 	// Mock the SendHeartbeat method
 	MOCK_METHOD(
