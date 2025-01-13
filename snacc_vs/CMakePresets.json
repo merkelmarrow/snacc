@@ -71,10 +71,10 @@
       "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/build/${presetName}",
+      "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "/usr/bin/gcc",
-        "CMAKE_CXX_COMPILER": "/usr/bin/g++"
+        "CMAKE_C_COMPILER": "${env:CC}",
+        "CMAKE_CXX_COMPILER": "${env:CXX}"
         // If using vcpkg on linux
         // "CMAKE_TOOLCHAIN_FILE": "<path to vcpkg.cmake>"
       },
