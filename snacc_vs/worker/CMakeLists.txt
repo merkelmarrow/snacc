@@ -16,7 +16,7 @@ add_executable (worker
 	system_monitor.cpp
 	heartbeat_client.cpp
 	worker_main.cpp
- "tests/test_heartbeat_client.cpp")
+)
 
 target_link_libraries (worker PRIVATE
 	heartbeat_proto
