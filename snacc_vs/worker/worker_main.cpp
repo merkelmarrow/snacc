@@ -8,8 +8,8 @@
 #include <iostream>
 
 // Globals for signal handling
-static ISystemMonitor* g_monitor_ptr = nullptr;
-static IHeartbeatClient* g_client_ptr = nullptr;
+static std::weak_ptr<ISystemMonitor> g_monitor_ptr;
+static std::weak_ptr<IHeartbeatClient> g_client_ptr;
 
 void SignalHandler(int32_t signum);
 
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
 
 void SignalHandler(int32_t signum) {
 	std::cout << "\nReceived signal: " << signum << ". Initiating shutdown..." << std::endl;
-	if (g_client_ptr) {
-		g_client_ptr->Shutdown();
+	if (auto client = g_client_ptr.lock()) {
+		client->Shutdown();
 	}
 }
