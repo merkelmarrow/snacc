@@ -2,6 +2,7 @@
 
 #include "system_monitor.hpp"
 #include <stdexcept>
+#include <PdhMsg.h>
 
 SystemMonitor::SystemMonitor() {}
 
@@ -12,8 +13,8 @@ SystemMonitor::~SystemMonitor() {
 void SystemMonitor::Cleanup() {
 	if (cpu_query_) {
 		PdhCloseQuery(cpu_query_);
-		cpu_query_ = NULL;
-		cpu_counter_ = NULL;
+		cpu_query_ = nullptr;
+		cpu_counter_ = nullptr;
 	}
 }
 
@@ -44,6 +45,14 @@ bool SystemMonitor::Initialise() {
 		return false;
 	}
 
+	// Prime the counter with the first read
+	status = PdhCollectQueryData(cpu_query_);
+	if (status != ERROR_SUCCESS) {
+		SetLastError("Failed to collect initial CPU data.");
+		Cleanup();
+		return false;
+	}
+
 	return true;
 }
 
@@ -59,29 +68,31 @@ float SystemMonitor::GetCPUUsage() {
 		return -1.0f;
 	}
 
-	PDH_FMT_COUNTERVALUE counterVal;
+	PDH_FMT_COUNTERVALUE counter_val;
+	DWORD dwType;
 	status = PdhGetFormattedCounterValue(
 		cpu_counter_,
 		PDH_FMT_DOUBLE,
-		NULL,
-		&counterVal);
+		&dwType,
+		&counter_val
+	);
 
 	if (status != ERROR_SUCCESS) {
 		SetLastError("Failed to format CPU counter value");
 		return -1.0f;
 	}
 
-	return static_cast<float>(counterVal.doubleValue);
+	return static_cast<float>(counter_val.doubleValue);
 }
 
 float SystemMonitor::GetMemoryUsage() {
-	MEMORYSTATUSEX memInfo;
-	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	MEMORYSTATUSEX mem_info;
+	mem_info.dwLength = sizeof(MEMORYSTATUSEX);
 
-	if (!GlobalMemoryStatusEx(&memInfo)) {
+	if (!GlobalMemoryStatusEx(&mem_info)) {
 		SetLastError("Failed to get memory status");
 		return -1.0f;
 	}
 
-	return static_cast<float>(memInfo.dwMemoryLoad);
+	return static_cast<float>(mem_info.dwMemoryLoad);
 }
