@@ -14,3 +14,6 @@ set (CMAKE_CXX_STANDARD 20)
 set (CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable (PowershellRun main.cpp)
+
+find_package(tiny-process-library CONFIG REQUIRED)
+target_link_libraries(PowershellRun PRIVATE tiny-process-library::tiny-process-library)
