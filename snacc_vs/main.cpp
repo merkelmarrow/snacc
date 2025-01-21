@@ -16,10 +16,12 @@ int main() {
 	tpl::Process process(command,
 		"",
 		[](const char* bytes, size_t n) {
-			std::cout << "Output: " << std::string(bytes, n);
+			std::string output(bytes, n);
+			if (!output.empty() && output) /// TODO: FINISH HERE
+			std::cout << "Output: " << std::string(bytes, n) << std::endl;
 		},
 		[](const char* bytes, size_t n) {
-			std::cerr << "Error: " << std::string(bytes, n);
+			std::cerr << "Error: " << std::string(bytes, n) << std::endl;
 		}
 	);
 
